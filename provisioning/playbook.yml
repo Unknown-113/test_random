@@ -38,7 +38,7 @@
 
     - name: Create flag file
       copy:
-        content: "FLAG{{ '{' }}{{ lookup('password','/dev/null length=16 chars=ascii_letters') }}{{ '}' }}"
+        content: "FLAG{{ '{' }}{{ lookup('pipe','openssl rand -hex 8') }}{{ '}' }}"
         dest: /home/user/lab/key.txt
         owner: user
         group: user
