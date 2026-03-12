@@ -1,4 +1,4 @@
-name: test_random_flag
+name: test-random-flag
 
 hosts:
   - name: student-vm
