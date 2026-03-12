@@ -1,0 +1,45 @@
+- hosts: student-vm
+  become: yes
+
+  tasks:
+
+    - name: Ensure user exists
+      user:
+        name: user
+        shell: /bin/bash
+        create_home: yes
+        password: "{{ 'user' | password_hash('sha512') }}"
+
+    - name: Install SSH server
+      apt:
+        name: openssh-server
+        state: present
+        update_cache: yes
+
+    - name: Enable password SSH login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+
+    - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted
+        enabled: yes
+
+    - name: Create lab folder
+      file:
+        path: /home/user/lab
+        state: directory
+        owner: user
+        group: user
+        mode: '0755'
+
+    - name: Create flag file
+      copy:
+        content: "FLAG{{ '{' }}{{ lookup('password','/dev/null length=16 chars=ascii_letters') }}{{ '}' }}"
+        dest: /home/user/lab/key.txt
+        owner: user
+        group: user
+        mode: '0644'
